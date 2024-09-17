@@ -43,10 +43,10 @@ datestrtitle = datestrtitle(1: indADC-1)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% ALL LEVEL PROCESSING  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % get levels and filenames
-dirDatanow = strcat(dirData, datestr)
-X = getLVL (dirDatanow)
+dirDatanow = strcat(dirData, datestr);
+X = getLVL (dirDatanow);
 % X = [ -0.027 -0.2050 -0.4710 - 0.4920 0.0061 0.225 0.43 0 0]
-fnX = getLVLfn (dirDatanow, X)
+fnX = getLVLfn (dirDatanow, X);
 %
 % load BETAchannel1
 % load BETAch1ext
@@ -66,25 +66,36 @@ BETAch1int = zeros(1024*8,6);
 BETAch1ext = zeros(1024*8,6);
 % 2024-09-02
 BETAext = zeros(1024*8,6);
-for ch =3%:8
-for bin=1:1024
+BETAint = zeros(1024*8,6);
+for ch =1%:8
+for bin=1:2%1024
 ii=1024*(ch-1)+bin;
 %
 %tic
-%[yarray] = DRSCalibrationDataInt (X, fnX, ch, bin);
-[yarray] = DRSCalibrationDataExt (X, fnX, ch, bin);
+% 2024-09-17
+[yarrayint] = DRSCalibrationDataInt (X, fnX, ch, bin);
+[yarrayout] = DRSCalibrationDataExt (X, fnX, ch, bin);
 %toc - 3.7s
 % sort data
 [Xs, inds] = sort(X);
-Ys = yarray(inds);
+Ysint = yarrayint(inds);
+Ysout = yarrayout(inds);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    REGRESSION   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 2024-08-27
-y = mid(Ys);
-epsilon = rad(Ys);
+% 2024-09-17
+y = mid(Ysint);
+epsilon = rad(Ysint);
 % https://github.com/szhilin/octave-interval-examples/blob/master/SteamGenerator.ipynb
 Xi = [ Xs'.^0 Xs'];
-irp_DRS = ir_problem(Xi, y', epsilon');
+irp_DRSint = ir_problem(Xi, y', epsilon');
+%
+y = mid(Ysout);
+epsilon = rad(Ysout);
+% https://github.com/szhilin/octave-interval-examples/blob/master/SteamGenerator.ipynb
+Xi = [ Xs'.^0 Xs'];
+irp_DRSout = ir_problem(Xi, y', epsilon');
+
 %
 ##y = mid(Ys)/16384;
 ##epsilon = rad(Ys)/16384;
@@ -99,30 +110,39 @@ irp_DRS = ir_problem(Xi, y', epsilon');
 ##h2=plot(Xp, yp)
 ##%
 
-b_int = ir_outer(irp_DRS);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+b_out = ir_outer(irp_DRSout);
+Ys = Ysint
+y = mid(Ys)/16384-0.5;
+epsilon = rad(Ys)/16384;
+[tolmax,argmax, env] = tolsolvty(Xi,Xi,y'-epsilon',y'+epsilon',1)
+if tolmax > 0
+  b_int = ir_outer(irp_DRSint);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-##BETAch1int(ii, 1) = ch;
-##BETAch1int(ii, 2) = bin;
-##BETAch1int(ii, 3) = b_int(1,1);
-##BETAch1int(ii, 4) = b_int(1,2);
-##BETAch1int(ii, 5) = b_int(2,1);
-##BETAch1int(ii, 6) = b_int(2,2);
-##BETAch1ext(ii, 1) = ch;
-##BETAch1ext(ii, 2) = bin;
-##BETAch1ext(ii, 3) = b_int(1,1);
-##BETAch1ext(ii, 4) = b_int(1,2);
-##BETAch1ext(ii, 5) = b_int(2,1);
-##BETAch1ext(ii, 6) = b_int(2,2);
+BETAch1int(ii, 1) = ch;
+BETAch1int(ii, 2) = bin;
+BETAch1int(ii, 3) = b_int(1,1);
+BETAch1int(ii, 4) = b_int(1,2);
+BETAch1int(ii, 5) = b_int(2,1);
+BETAch1int(ii, 6) = b_int(2,2);
+BETAch1ext(ii, 1) = ch;
+BETAch1ext(ii, 2) = bin;
+BETAch1ext(ii, 3) = b_out(1,1);
+BETAch1ext(ii, 4) = b_out(1,2);
+BETAch1ext(ii, 5) = b_out(2,1);
+BETAch1ext(ii, 6) = b_out(2,2);
 % 2024-09-02
-BETAext(ii, 1) = ch;
-BETAext(ii, 2) = bin;
-BETAext(ii, 3) = b_int(1,1);
-BETAext(ii, 4) = b_int(1,2);
-BETAext(ii, 5) = b_int(2,1);
-BETAext(ii, 6) = b_int(2,2);
+##BETAext(ii, 1) = ch;
+##BETAext(ii, 2) = bin;
+##BETAext(ii, 3) = b_out(1,1);
+##BETAext(ii, 4) = b_out(1,2);
+##BETAext(ii, 5) = b_out(2,1);
+##BETAext(ii, 6) = b_out(2,2);
 ii
 end
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % 2024-09-02
 BETAch2ext = BETAext;
@@ -167,12 +187,19 @@ title(titlestr)
 figure_name_out=strcat(titlestr, '.png')
 print('-dpng', '-r300', figure_name_out), pwd
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 figure
 hist(widBeta0ch1ext/16385)
+hist(widBeta0ch1ext/16385, 100)
+xlim([0.001 0.005])
+xlim([0.006 0.0175])
+ylim([0 3.5])
 xlabel('V')
 ylabel('Count')
 set(gca, 'fontsize', 14);
 titlestr=strcat("HIST Zero Line Width Channel =", num2str(ch), ' external ')
+titlestr=strcat("HIST Zero Line Width Channel =", num2str(ch), ' external ', ' typical')
+titlestr=strcat("HIST Zero Line Width Channel =", num2str(ch), ' external ', ' outlilers')
 title(titlestr)
 figure_name_out=strcat(titlestr, '.png')
 print('-dpng', '-r300', figure_name_out), pwd

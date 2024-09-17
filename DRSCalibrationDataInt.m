@@ -53,7 +53,7 @@ ynows = sort(ynow);
 ynowint = infsup(ynows(runs/4), ynows(3*runs/4));
 % 2024-08-30
 % q1-q9
-%ynowint = infsup(ynows(runs/10), ynows(9*runs/10));
+% ynowint = infsup(ynows(runs/10), ynows(9*runs/10));
 yarray = [yarray ynowint];
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% toc 3.6 s
