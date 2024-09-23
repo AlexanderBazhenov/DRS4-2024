@@ -28,10 +28,10 @@ addpath(dirki)
 
 cd(dirData), pwd
 % 2024-08-27
-datestr='27_08_2024ADC_rawData\'
-datestrtitle = strrep(datestr, '_', '')
-indADC = findstr(datestrtitle, 'ADC')
-datestrtitle = datestrtitle(1: indADC-1)
+datestr='27_08_2024ADC_rawData\';
+datestrtitle = strrep(datestr, '_', '');
+indADC = findstr(datestrtitle, 'ADC');
+datestrtitle = datestrtitle(1: indADC-1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%   RAW DATA   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%  ZERLOLINE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 2024-08-23
@@ -68,56 +68,10 @@ BETAch1ext = zeros(1024*8,6);
 BETAext = zeros(1024*8,6);
 BETAint = zeros(1024*8,6);
 for ch =1%:8
-for bin=1:2%1024
+for bin=2 %1024
 ii=1024*(ch-1)+bin;
-%
-%tic
-% 2024-09-17
-[yarrayint] = DRSCalibrationDataInt (X, fnX, ch, bin);
-[yarrayout] = DRSCalibrationDataExt (X, fnX, ch, bin);
-%toc - 3.7s
-% sort data
-[Xs, inds] = sort(X);
-Ysint = yarrayint(inds);
-Ysout = yarrayout(inds);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    REGRESSION   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 2024-08-27
-% 2024-09-17
-y = mid(Ysint);
-epsilon = rad(Ysint);
-% https://github.com/szhilin/octave-interval-examples/blob/master/SteamGenerator.ipynb
-Xi = [ Xs'.^0 Xs'];
-irp_DRSint = ir_problem(Xi, y', epsilon');
-%
-y = mid(Ysout);
-epsilon = rad(Ysout);
-% https://github.com/szhilin/octave-interval-examples/blob/master/SteamGenerator.ipynb
-Xi = [ Xs'.^0 Xs'];
-irp_DRSout = ir_problem(Xi, y', epsilon');
-
-%
-##y = mid(Ys)/16384;
-##epsilon = rad(Ys)/16384;
-##% https://github.com/szhilin/octave-interval-examples/blob/master/SteamGenerator.ipynb
-##Xi = [ Xs'.^0 Xs'];
-##figure
-##hold on
-##h1 =errorbar ( Xs, y', epsilon', epsilon',".b");
-##[tolmax,argmax] = tolinprog(Xi,Xi,y'-epsilon',y'+epsilon',1)
-##Xp=[ min(Xs) max(Xs)]
-##yp = argmax(1)+argmax(2)*Xp
-##h2=plot(Xp, yp)
-##%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-b_out = ir_outer(irp_DRSout);
-Ys = Ysint
-y = mid(Ys)/16384-0.5;
-epsilon = rad(Ys)/16384;
-[tolmax,argmax, env] = tolsolvty(Xi,Xi,y'-epsilon',y'+epsilon',1)
-if tolmax > 0
-  b_int = ir_outer(irp_DRSint);
+% 2024-09-20
+[b_int, b_out] = RegressionCoeff(X, fnX, ch, bin)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 BETAch1int(ii, 1) = ch;
@@ -143,6 +97,9 @@ ii
 end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% save BETAch1intext
+% load BETAch1intext
+
 %
 % 2024-09-02
 BETAch2ext = BETAext;
