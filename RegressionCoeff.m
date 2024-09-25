@@ -31,24 +31,26 @@ irp_DRSint = ir_problem(Xi, y', epsilon');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 b_out = ir_outer(irp_DRSout);
-Ys = Ysint
-y = mid(Ys)/16384-0.5;
-epsilon = rad(Ys)/16384;
-[tolmax,argmax, env] = tolsolvty(Xi,Xi,y'-epsilon',y'+epsilon',1)
-if tolmax > 0
-  b_int = ir_outer(irp_DRSint);
-  display('tolmax > 0')
-else
-  display('tolmax < 0')
-  [envnegind, envneg] = find(env(:,2) < 0)
-  indtoout = env(envnegind,1)
-##  y(indtoout) = mid(Ysout(indtoout))/16384-0.5;
-##  epsilon(indtoout) = rad(Ysout(indtoout))/16384;
-  y(indtoout) = mid(Ysout(indtoout));
-  epsilon(indtoout) = rad(Ysout(indtoout));
-  [tolmax,argmax, env] = tolsolvty(Xi,Xi,y'-epsilon',y'+epsilon',1)
-  irp_DRSint = ir_problem(Xi, y', epsilon');
-  b_int = ir_outer(irp_DRSint);
-endif
+% 2024-09-25
+DataCorrTol;
+##Ys = Ysint
+##y = mid(Ys)/16384-0.5;
+##epsilon = rad(Ys)/16384;
+##[tolmax,argmax, env] = tolsolvty(Xi,Xi,y'-epsilon',y'+epsilon',1)
+##if tolmax > 0
+##  b_int = ir_outer(irp_DRSint);
+##  display('tolmax > 0')
+##else
+##  display('tolmax < 0')
+##  [envnegind, envneg] = find(env(:,2) < 0)
+##  indtoout = env(envnegind,1)
+####  y(indtoout) = mid(Ysout(indtoout))/16384-0.5;
+####  epsilon(indtoout) = rad(Ysout(indtoout))/16384;
+##  y(indtoout) = mid(Ysout(indtoout));
+##  epsilon(indtoout) = rad(Ysout(indtoout));
+##  [tolmax,argmax, env] = tolsolvty(Xi,Xi,y'-epsilon',y'+epsilon',1)
+##  irp_DRSint = ir_problem(Xi, y', epsilon');
+##  b_int = ir_outer(irp_DRSint);
+##endif
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end
