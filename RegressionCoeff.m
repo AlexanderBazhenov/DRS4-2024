@@ -1,5 +1,7 @@
 % 2024-09-20
-function [b_int, b_out] = RegressionCoeff(X, fnX, ch, bin)
+function [b_int, b_out, NonCompCount] = RegressionCoeff(X, fnX, ch, bin)
+% 2024-09-26
+% NonCompCount - number of non compatible equations (data)
 %
 %tic
 % 2024-09-17
@@ -32,7 +34,11 @@ irp_DRSint = ir_problem(Xi, y', epsilon');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 b_out = ir_outer(irp_DRSout);
 % 2024-09-25
-DataCorrTol;
+%DataCorrTol;
+% 2024-09-26
+[b_int, env] = DataCorrNaive(Ysint, Ysout, Xi);
+  [envnegind, envneg] = find(env(:,2) < 0);
+NonCompCount =  length(envnegind);
 ##Ys = Ysint
 ##y = mid(Ys)/16384-0.5;
 ##epsilon = rad(Ys)/16384;

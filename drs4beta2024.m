@@ -64,6 +64,7 @@ addpath(dirlinprogpoly)
 % internal estimation Q1-Q3
 BETAch1int = zeros(1024*8,6);
 BETAch1ext = zeros(1024*8,6);
+NonComp = zeros (1024*8);
 % 2024-09-02
 BETAext = zeros(1024*8,6);
 BETAint = zeros(1024*8,6);
@@ -71,7 +72,10 @@ for ch =1%:8
 for bin=2 %1024
 ii=1024*(ch-1)+bin;
 % 2024-09-20
-[b_int, b_out] = RegressionCoeff(X, fnX, ch, bin)
+%[b_int, b_out] = RegressionCoeff(X, fnX, ch, bin)
+% 2024-09-26
+[b_int, b_out, NonCompCount] = RegressionCoeff(X, fnX, ch, bin);
+NonComp (ii) = NonCompCount;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 BETAch1int(ii, 1) = ch;
@@ -97,8 +101,7 @@ ii
 end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% save BETAch1intext
-% load BETAch1intext
+save BETAch1intext
 
 %
 % 2024-09-02
