@@ -20,12 +20,12 @@ Ysout = yarrayout(inds);
 % 2024-09-17
 Xi = [ Xs'.^0 Xs'];
 %
-y = mid(Ysout);
+y = mid(Ysout)-16384*0.5;
 epsilon = rad(Ysout);
 % https://github.com/szhilin/octave-interval-examples/blob/master/SteamGenerator.ipynb
 irp_DRSout = ir_problem(Xi, y', epsilon');
 %
-y = mid(Ysint);
+y = mid(Ysint)-16384*0.5;
 epsilon = rad(Ysint);
 irp_DRSint = ir_problem(Xi, y', epsilon');
 %
@@ -36,9 +36,8 @@ b_out = ir_outer(irp_DRSout);
 % 2024-09-25
 %DataCorrTol;
 % 2024-09-26
-[b_int, env] = DataCorrNaive(Ysint, Ysout, Xi);
-  [envnegind, envneg] = find(env(:,2) < 0);
-NonCompCount =  length(envnegind);
+[b_int, indtoout] = DataCorrNaive(Ysint, Ysout, Xi);
+NonCompCount =  length(indtoout);
 ##Ys = Ysint
 ##y = mid(Ys)/16384-0.5;
 ##epsilon = rad(Ys)/16384;

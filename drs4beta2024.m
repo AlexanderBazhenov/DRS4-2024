@@ -14,12 +14,11 @@ dirData = 'e:\Users\Public\Documents\ST\2024\T\DRS4\'
 
 % 2024-08-23
 % HomePC
-##dirroot = 'D:\ST\2024\T\'
-##dirki = 'D:\ST\2024\T\kinterval-0.0.1'
-##% dirOld2022 =  'd:\ST\2022\T\'
-##dir2023 =  'd:\ST\2023\T\'
-##dirki ='d:\ST\2024\T\\kinterval-0.0.1\'
-##dirData = 'd:\ST\2024\T\DRS4\'
+dirroot = 'D:\ST\2024\T\'
+dirki = 'D:\ST\2024\T\kinterval-0.0.1'
+dirData = 'D:\ST\2024\T\DRS4\'
+% dirOld2022 =  'd:\ST\2022\T\'
+dir2023 =  'd:\ST\2023\T\'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 addpath(dirroot)
@@ -64,10 +63,10 @@ addpath(dirlinprogpoly)
 % internal estimation Q1-Q3
 BETAch1int = zeros(1024*8,6);
 BETAch1ext = zeros(1024*8,6);
-NonComp = zeros (1024*8);
+NonComp = zeros (1024*8,1);
 % 2024-09-02
-BETAext = zeros(1024*8,6);
-BETAint = zeros(1024*8,6);
+##BETAext = zeros(1024*8,6);
+##BETAint = zeros(1024*8,6);
 for ch =1%:8
 for bin=2 %1024
 ii=1024*(ch-1)+bin;
