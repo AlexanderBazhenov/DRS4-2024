@@ -1,23 +1,23 @@
 ## Author: user <user@DESKTOP-SLVDEOK>
 ## Created: 2024-08-27
 % dirDatanow = strcat(dirData, datestr)
-function [fnX ] = getLVLfn (dirDatanow, X)
+function [X] = getLVL (dirDatanow)
 cd(dirDatanow);
 pwd;
 fns = dir;
 fns.name;
 % find zero level data
-fnX = [];
+X = [];
+% fnX = [];
 for ii=1:length(fns)
-%  ii
- fnamenow = fns(ii).name;
+  fnamenow = fns(ii).name;
  idx = findstr(fnamenow, '_lvl');
-  % 2024-10-04
+ % 2024-10-04
  idx = findstr(fnamenow, 'lvl');
      if (idx > 0)
        LVLstr = fnamenow(1: idx-1);
-       X = [X str2num(LVLstr) ];
-       fnX = [ fnX fnamenow ];
+      X = [X str2num(LVLstr) ];
+%      fnX = [ fnX fnamenow ];
       end
  end
 %

@@ -10,6 +10,9 @@ function [b_int, b_out, NonCompCount] = RegressionCoeff(X, fnX, ch, bin)
 ##[yarrayint] = DRSCalibrationDataInt (X, fnX, ch, bin);
 ##[yarrayout] = DRSCalibrationDataExt (X, fnX, ch, bin);
 %toc - 3.7s
+% [b_in_left, b_in_right, b_ex_left, b_ex_right] = DataRegressionInfSup(yarrayint, yarrayout)
+
+
 % sort data
 [Xs, inds] = sort(X);
 Ysint = yarrayint(inds);
@@ -32,30 +35,13 @@ irp_DRSint = ir_problem(Xi, y', epsilon');
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-b_out = ir_outer(irp_DRSout);
+[b_out, exitcode] = ir_outer(irp_DRSout);
 % 2024-09-25
 %DataCorrTol;
 % 2024-09-26
 [b_int, indtoout] = DataCorrNaive(Ysint, Ysout, Xi);
-NonCompCount =  length(indtoout);
-##Ys = Ysint
-##y = mid(Ys)/16384-0.5;
-##epsilon = rad(Ys)/16384;
-##[tolmax,argmax, env] = tolsolvty(Xi,Xi,y'-epsilon',y'+epsilon',1)
-##if tolmax > 0
-##  b_int = ir_outer(irp_DRSint);
-##  display('tolmax > 0')
-##else
-##  display('tolmax < 0')
-##  [envnegind, envneg] = find(env(:,2) < 0)
-##  indtoout = env(envnegind,1)
-####  y(indtoout) = mid(Ysout(indtoout))/16384-0.5;
-####  epsilon(indtoout) = rad(Ysout(indtoout))/16384;
-##  y(indtoout) = mid(Ysout(indtoout));
-##  epsilon(indtoout) = rad(Ysout(indtoout));
-##  [tolmax,argmax, env] = tolsolvty(Xi,Xi,y'-epsilon',y'+epsilon',1)
-##  irp_DRSint = ir_problem(Xi, y', epsilon');
-##  b_int = ir_outer(irp_DRSint);
-##endif
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+NonCompCount = 0;
+if indtoout > 0
+  NonCompCount =  length(indtoout);
+end
 end

@@ -17,7 +17,6 @@ dirData = 'e:\Users\Public\Documents\ST\2024\T\DRS4\'
 dirroot = 'D:\ST\2024\T\'
 dirki = 'D:\ST\2024\T\kinterval-0.0.1'
 dirData = 'D:\ST\2024\T\DRS4\'
-% dirOld2022 =  'd:\ST\2022\T\'
 dir2023 =  'd:\ST\2023\T\'
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -27,7 +26,9 @@ addpath(dirki)
 
 cd(dirData), pwd
 % 2024-08-27
-datestr='27_08_2024ADC_rawData\';
+datestr = '27_08_2024ADC_rawData\';
+datestr = '04_10_2024_070_068\'
+datestr = '04_10_2024_074_068\side_a\'
 datestrtitle = strrep(datestr, '_', '');
 indADC = findstr(datestrtitle, 'ADC');
 datestrtitle = datestrtitle(1: indADC-1);
@@ -45,6 +46,7 @@ datestrtitle = datestrtitle(1: indADC-1);
 dirDatanow = strcat(dirData, datestr);
 X = getLVL (dirDatanow);
 % X = [ -0.027 -0.2050 -0.4710 - 0.4920 0.0061 0.225 0.43 0 0]
+% TODO side A/B
 fnX = getLVLfn (dirDatanow, X);
 %
 % load BETAchannel1
@@ -53,10 +55,10 @@ fnX = getLVLfn (dirDatanow, X);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% bin ch %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 pkg load interval
 dirlinprog = 'e:\Users\Public\Documents\ST\2024\T\octave-interval\m'
-%dirlinprog = 'D:\ST\2024\T\octave-interval\m'
+dirlinprog = 'D:\ST\2024\T\octave-interval\m'
 addpath(dirlinprog)
 dirlinprogpoly = 'e:\Users\Public\Documents\ST\2024\T\octave-interval\m\polytopes\'
-%dirlinprogpoly = 'D:\ST\2024\T\octave-interval\m\polytopes\'
+dirlinprogpoly = 'D:\ST\2024\T\octave-interval\m\polytopes\'
 addpath(dirlinprogpoly)
 %
 % 2024-08-29
@@ -68,7 +70,7 @@ NonComp = zeros (1024*8,1);
 ##BETAext = zeros(1024*8,6);
 ##BETAint = zeros(1024*8,6);
 for ch =1%:8
-for bin=2 %1024
+for bin=1%:2%1024
 ii=1024*(ch-1)+bin;
 % 2024-09-20
 %[b_int, b_out] = RegressionCoeff(X, fnX, ch, bin)
@@ -100,6 +102,22 @@ ii
 end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% save NonCompCount
+% load NonCompCount
+
+NonCompCh1 = NonComp(1:1024);
+figure
+hist(NonCompCh1, max(NonCompCh1))
+xlabel('Number of non-compatible data / equations')
+ylabel('Count')
+set(gca, 'fontsize', 14);
+xticks(0:max(NonCompCh1))
+titlestr=strcat("HIST Number of non-compatible data internal Q1-Q3 Channel =", num2str(ch))
+title(titlestr)
+figure_name_out=strcat(titlestr, '.png')
+print('-dpng', '-r300', figure_name_out), pwd
+
+
 save BETAch1intext
 
 %
