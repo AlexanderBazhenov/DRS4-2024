@@ -1,21 +1,12 @@
-% 2024-09-25
-% Naive Data Coorection by TOL env
-Ys = Ysint
-y = mid(Ys)/16384-0.5;
-epsilon = rad(Ys)/16384;
-[tolmax,argmax, env] = tolsolvty(Xi,Xi,y'-epsilon',y'+epsilon',1)
-if tolmax > 0
-  b_int = ir_outer(irp_DRSint);
-  display('tolmax > 0')
-else
-  display('tolmax < 0')
-  [envnegind, envneg] = find(env(:,2) < 0)
-  indtoout = env(envnegind,1)
-##  y(indtoout) = mid(Ysout(indtoout))/16384-0.5;
-##  epsilon(indtoout) = rad(Ysout(indtoout))/16384;
-  y(indtoout) = mid(Ysout(indtoout));
-  epsilon(indtoout) = rad(Ysout(indtoout));
-  [tolmax,argmax, env] = tolsolvty(Xi,Xi,y'-epsilon',y'+epsilon',1)
-  irp_DRSint = ir_problem(Xi, y', epsilon');
-  b_int = ir_outer(irp_DRSint);
-endif
+% 2024-10-04
+% Optimal Data Coorection by TOL env
+xx4opt = [ xx', xx', xx', xx' ]'
+b_opt_left4 = [ b_in_left', b_in_left', b_ex_left', b_ex_left' ]'
+b_opt_rigth4 = [ b_in_rigth', b_ex_rigth', b_in_rigth', b_ex_rigth']'
+[tolmax,argmax, env] = tolsolvty(xx4opt,xx4opt,b_opt_left4,b_opt_rigth4,1)
+  [envnegind, envneg] = find(env(:,2) < 0);
+  indtoout = env(envnegind,1);
+xx4opt (indtoout, :) = []
+b_opt_left4  (indtoout, :) = []
+b_opt_rigth4  (indtoout, :) = []
+[tolmax,argmax, env] = tolsolvty(xx4opt,xx4opt,b_opt_left4,b_opt_rigth4,1)
